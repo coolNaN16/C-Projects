@@ -34,20 +34,40 @@ int walk(const char *path, int indent, const char* query, int is_checking) {
         if (dp->d_type == DT_DIR) { 
             // is a directory
             
-            int foundquery = walk(sub_path, indent + 1, query, 1);
-            if (foundquery > 0) {
+            if (strcmp(query, "") == 0) {
                 print_file(dirname, 1, indent);
                 walk(sub_path, indent + 1, query, 0);
-                totaldir++;
-                // totalquery++;
+                totaldir++;                
+            } else {
+                print_file(dirname, 1, indent);
+                int foundquery = walk(sub_path, indent + 1, query, 1);
+                if (foundquery > 0) {
+                    // print_file(dirname, 1, indent);
+                    walk(sub_path, indent + 1, query, 0);
+                    if (is_checking == 0) {
+                        totaldir++;
+                    }
+                    
+                    // totalquery++;
+                }
             }
         } else {
             // is a file
-            if (strstr(dirname, query) != NULL) {
-                // printf("File: %s, Query: %s\n", dirname, query);
-                if (!is_checking) print_file(dirname, 0, indent);
+
+            if (strcmp(query, "") == 0) {
+                print_file(dirname, 0, indent);
                 totalfile++;
-                totalquery++;
+            } else {
+                if (strstr(dirname, query) != NULL) {
+                    // printf("File: %s, Query: %s\n", dirname, query);
+                    if (is_checking == 0) {
+                        print_file(dirname, 0, indent);
+                        totalfile++;
+                    } else {
+                       totalquery++; 
+                       break;
+                    }
+                }
             }
         }
         
